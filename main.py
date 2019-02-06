@@ -14,14 +14,12 @@ parser.add_argument(
     help="full path of csv file you want to process",
     type=str,
     required=True,
-    default=None
 )
 parser.add_argument(
     "-nf",
     help="name of the file and path of the directory that will be created",
     type=str,
     required=True,
-    default=None
 )
 
 args = parser.parse_args()
@@ -61,7 +59,7 @@ def main():
                         index=False,
                         line_terminator='\n'
                     )
-                    sys.stdout.write (
+                    sys.stdout.write(
                         f'\nFile has been created here:\n{new_file_path}\n')
                     loop_control = False
                 except FileNotFoundError:
