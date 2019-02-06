@@ -10,31 +10,30 @@ from utils import check_encoding, input_data_manipulation
 # Creating argparse variables
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--file_path",
-    metavar='-a',
+    "-f",
     help="full path of csv file you want to process",
     type=str,
     required=True,
     default=None
 )
 parser.add_argument(
-    "--new_file_name",
-    metavar='-u',
-    help="name of the file that will be created",
+    "-nf",
+    help="name of the file and path of the directory that will be created",
     type=str,
     required=True,
     default=None
 )
 
 args = parser.parse_args()
-file_path = os.path.abspath(args.file_to_parse_path)
-new_file_path = os.path.abspath(args.parsed_file_name)
+file_path = os.path.abspath(args.f)
+new_file_path = os.path.abspath(args.nf)
 
 
 def main():
     """Main function of the application"""
     loop_control = True
     while loop_control:
+        # checking if path of the file exist
         if os.path.exists(file_path):
             encode_type = 'UTF-8'
             if check_encoding(file_path) == 'UTF-16':
@@ -52,8 +51,10 @@ def main():
                 # grouping date by date and state
                 date_groups = df_2.groupby(
                     ['date', 'state']).sum().reset_index()
-                # writing data to new csv file with enconding UTF-8
+
+                # if the path for a new file doesnt exist error will be raised
                 try:
+                    # writing data to new csv file with enconding UTF-8
                     date_groups.to_csv(
                         new_file_path,
                         encoding='UTF-8',
@@ -61,16 +62,15 @@ def main():
                         line_terminator='\n'
                     )
                     sys.stdout.write (
-                        f'\nFile has been created at:\n{new_file_path}\n')
+                        f'\nFile has been created here:\n{new_file_path}\n')
                     loop_control = False
                 except FileNotFoundError:
                     sys.stderr.write(
-                        f'{new_file_path} - there is no such file or directory'
+                        f'{new_file_path}-there is no such file or directory\n'
                     )
                     loop_control = False
         else:
-            sys.stderr.write(f'{file_path} - there is no such file or '
-                             f'directory, please check the path and try again')
+            sys.stderr.write(f'{file_path} - there is no such file or\n')
             loop_control = False
 
 
