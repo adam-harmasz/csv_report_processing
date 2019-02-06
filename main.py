@@ -1,17 +1,8 @@
-import csv
+import pandas as pd
 import pycountry
-import itertools
+import csv
 from datetime import datetime
-
-
-def sort_by_date(item):
-    """Function to help itertools groupby group records by date"""
-    return item['date']
-
-
-def sort_by_country(input_list):
-    """Function to help itertools groupby group records by country"""
-    return input_list('state')
+from math import ceil
 
 
 def get_country_and_change_date_format(my_input):
@@ -20,27 +11,39 @@ def get_country_and_change_date_format(my_input):
     format to the YYYY-MM-DD format
     function should return three letter country code
     """
-
     for state in my_input:
         try:
+            # replacing state name with the country code of the state
             state['state'] = pycountry.countries.lookup(
                 pycountry.subdivisions.lookup(
                     state['state']).country_code).alpha_3
-            state['date'] = datetime.strptime(state['date'], '%m/%d/%Y').strftime('%Y-%m-%d')
+            # change date format to YYYY-MM-DD
+            state['date'] = datetime.strptime(
+                state['date'],
+                '%m/%d/%Y').strftime('%Y-%m-%d')
+            state['ctr'] = ceil(float(state['impressions']) * (float(state['ctr'][0:3]) * 0.01))
             yield state
 
+        # if state name is not included in pycountry library exception will be
+        # caught and state name will replaced to 'XXX' value
         except LookupError:
+            # replacing state name with the country code of the state
             state['state'] = 'XXX'
-            state['date'] = datetime.strptime(state['date'], '%m/%d/%Y').strftime('%Y-%m-%d')
+            # change date format to YYYY-MM-DD
+            state['date'] = datetime.strptime(
+                state['date'],
+                '%m/%d/%Y').strftime('%Y-%m-%d')
+            state['ctr'] = ceil(float(state['impressions']) * (float(state['ctr'][0:3]) * 0.01))
+            state['impressions'] = float(state['impressions'])
             yield state
 
 
-with open('new_sample', newline='') as f:
-    csv_reader = csv.DictReader(f, delimiter=',')
-    csv_reader_header = csv_reader
-
-    date_group = itertools.groupby(
-        get_country_and_change_date_format(csv_reader),
-        sort_by_date
-    )
-    for i, g in date_group:
+with open('new_sample', 'r') as f:
+    csv_reader = csv.DictReader(f)
+    new_list = get_country_and_change_date_format(csv_reader)
+    df_2 = pd.DataFrame(data=new_list)
+    df_2['impressions'] = df_2['impressions'].apply(lambda x: int(x))
+    date_groups = df_2.groupby(['date', 'state']).sum().reset_index()
+    date_groups.set_index('date')
+    print(date_groups)
+    date_groups.to_csv('new_file.csv', encoding='UTF-8', index=False)
