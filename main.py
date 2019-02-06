@@ -1,68 +1,78 @@
+import os
+import sys
+import argparse
 import pandas as pd
-import pycountry
 import csv
-from datetime import datetime
-from math import ceil
-import chardet
+
+from utils import check_encoding, input_data_manipulation
 
 
-def check_encoding(file_path):
-    """Function that defines encoding of the file"""
-    raw_data = open (file_path, 'rb').read()
-    result = chardet.detect(raw_data)
-    encoding = result['encoding']
-    return encoding
+# Creating argparse variables
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--file_path",
+    metavar='-a',
+    help="full path of csv file you want to process",
+    type=str,
+    required=True,
+    default=None
+)
+parser.add_argument(
+    "--new_file_name",
+    metavar='-u',
+    help="name of the file that will be created",
+    type=str,
+    required=True,
+    default=None
+)
+
+args = parser.parse_args()
+file_path = os.path.abspath(args.file_to_parse_path)
+new_file_path = os.path.abspath(args.parsed_file_name)
 
 
-def get_country_and_change_date_format(my_input):
-    """
-    Function defining country from the given state name and changing date
-    format to the YYYY-MM-DD format
-    function should return generator of a new OrederedDict
-    """
-    for state in my_input:
-        try:
-            # replacing state name with the country code of the state
-            state['state'] = pycountry.countries.lookup(
-                pycountry.subdivisions.lookup(
-                    state['state']).country_code).alpha_3
-            # change date format to YYYY-MM-DD
-            state['date'] = datetime.strptime(
-                state['date'],
-                '%m/%d/%Y').strftime('%Y-%m-%d')
-            state['ctr'] = ceil(float(state['impressions']) *
-                                (float(state['ctr'][0:3]) * 0.01))
-            yield state
-
-        # if state name is not included in pycountry library exception will be
-        # caught and state name will replaced to 'XXX' value
-        except LookupError:
-            # replacing state name with the country code of the state
-            state['state'] = 'XXX'
-            # change date format to YYYY-MM-DD
-            state['date'] = datetime.strptime(
-                state['date'],
-                '%m/%d/%Y').strftime('%Y-%m-%d')
-            state['ctr'] = ceil(float(state['impressions']) *
-                                (float(state['ctr'][0:3]) * 0.01))
-            state['impressions'] = float(state['impressions'])
-            yield state
-
-
-def main(file_path):
+def main():
     """Main function of the application"""
-    encode_type = 'UTF-8'
-    if check_encoding(file_path) == 'UTF-16':
-        encode_type = 'UTF-16'
+    loop_control = True
+    while loop_control:
+        if os.path.exists(file_path):
+            encode_type = 'UTF-8'
+            if check_encoding(file_path) == 'UTF-16':
+                encode_type = 'UTF-16'
 
-    with open(file_path, 'r', encoding=encode_type) as f:
-        csv_reader = csv.DictReader(f)
-        new_list = get_country_and_change_date_format(csv_reader)
-        df_2 = pd.DataFrame(data=new_list)
-        df_2['impressions'] = df_2['impressions'].apply(lambda x: int(x))
-        date_groups = df_2.groupby(['date', 'state']).sum().reset_index()
-        date_groups.set_index('date')
-        date_groups.to_csv('new_file.csv', encoding='UTF-8', index=False)
+            with open(file_path, 'r', encoding=encode_type) as f:
+                # create csv reader
+                csv_reader = csv.DictReader(f)
+                new_list = input_data_manipulation(csv_reader)
+                # creating data frame with pandas
+                df_2 = pd.DataFrame(data=new_list)
+                # changing type of impressions column to int64
+                df_2['impressions'] = df_2['impressions'].apply(
+                    lambda x: int(x))
+                # grouping date by date and state
+                date_groups = df_2.groupby(
+                    ['date', 'state']).sum().reset_index()
+                # writing data to new csv file with enconding UTF-8
+                try:
+                    date_groups.to_csv(
+                        new_file_path,
+                        encoding='UTF-8',
+                        index=False,
+                        line_terminator='\n'
+                    )
+                    sys.stdout.write (
+                        f'\nFile has been created at:\n{new_file_path}\n')
+                    loop_control = False
+                except FileNotFoundError:
+                    sys.stderr.write(
+                        f'{new_file_path} - there is no such file or directory'
+                    )
+                    loop_control = False
+        else:
+            sys.stderr.write(f'{file_path} - there is no such file or '
+                             f'directory, please check the path and try again')
+            loop_control = False
 
 
-main('utf8.csv')
+if __name__ == '__main__':
+    main()
