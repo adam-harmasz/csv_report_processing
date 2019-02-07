@@ -1,4 +1,5 @@
 ##CSV REPORT PROCESSING SCRIPT
+
 This python script will process your reports.
 Input format: UTF-8 or UTF-16 CSV file (with any kind of line endings), with columns: date(MM/DD/YYYY), state name, number of impressions and CTR percentage.
 
