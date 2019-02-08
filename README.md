@@ -63,7 +63,12 @@ example output:
 - Output format: UTF-8 CSV file with Unix line endings, with columns: date (YYYY-MM-DD),
 three letter country code (or XXX for unknown states), number of impressions, number of
 clicks (rounded, assuming the CTR is exact). Rows are sorted lexicographically by date
-followed by the country code.   
+followed by the country code.
+- Technologies used:
+    - Python 3.7.0
+        - Pandas
+        - Pycountry
+        - Chardet   
 
 
 

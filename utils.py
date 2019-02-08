@@ -5,7 +5,10 @@ import pycountry
 
 
 def check_encoding(file_path):
-    """Function that defines encoding and returns name of the encoding"""
+    """
+    Function that defines encoding and returns name of the encoding
+    using chardet library
+    """
     raw_data = open(file_path, 'rb').read()
     result = chardet.detect(raw_data)
     return result['encoding']
@@ -15,7 +18,7 @@ def input_data_manipulation(my_input):
     """
     Function defining country from the given state name and changing date
     format to the YYYY-MM-DD format
-    function should return generator of a new OrderedDict
+    function should return generator OrderedDict
     """
     for state in my_input:
         try:
@@ -41,7 +44,7 @@ def input_data_manipulation(my_input):
             state['date'] = datetime.strptime(
                 state['date'],
                 '%m/%d/%Y').strftime('%Y-%m-%d')
-            # Calculating CTR value
+            # Calculating number of clicks according to impressions and CTR
             state['ctr'] = ceil(float(state['impressions']) *
                                 (float(state['ctr'][0:3]) * 0.01))
             yield state

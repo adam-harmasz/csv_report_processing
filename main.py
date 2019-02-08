@@ -44,11 +44,9 @@ def main(args):
             # creating data frame with pandas
             df = pd.DataFrame(data=new_list)
             # changing type of impressions column to int64
-            df['impressions'] = df['impressions'].apply(
-                lambda x: int(x))
+            df['impressions'] = df['impressions'].apply(lambda x: int(x))
             # grouping date by date and state
-            date_groups = df.groupby(
-                ['date', 'state']).sum().reset_index()
+            date_groups = df.groupby(['date', 'state']).sum().reset_index()
             # if the path for a new file doesnt exist error will be raised
             try:
                 # writing data to new csv file with enconding UTF-8
