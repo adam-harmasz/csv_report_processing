@@ -47,28 +47,28 @@ def main(args):
             # create csv reader for a file with headers
             if has_header:
                 header_list = get_header(args.file)
-                date_h = header_list[0]
-                state_h = header_list[1]
-                impression_h = header_list[2]
-                ctr_h = header_list[3]
+                date_h = header_list[0]  # date header
+                country_h = header_list[1]  # country code header
+                impression_h = header_list[2]  # impression count header
+                ctr_h = header_list[3]  # ctr count header
                 csv_reader = csv.DictReader(f)
                 data_manipulation(
                     csv_reader,
                     args,
                     date_h,
-                    state_h,
+                    country_h,
                     impression_h,
                     ctr_h
                 )
             # create csv reader for a file with no headers
             else:
                 date_h = 'date'
-                state_h = 'country_code'
+                country_h = 'country_code'
                 impression_h = 'number_of_impressions'
                 ctr_h = 'ctr_count'
                 csv_reader = csv.DictReader(f, fieldnames=[
                     date_h,
-                    state_h,
+                    country_h,
                     impression_h,
                     ctr_h
                 ])
@@ -76,7 +76,7 @@ def main(args):
                     csv_reader,
                     args,
                     date_h,
-                    state_h,
+                    country_h,
                     impression_h,
                     ctr_h
                 )
