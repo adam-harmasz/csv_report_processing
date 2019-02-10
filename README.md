@@ -66,6 +66,8 @@ or:
 
 - Using this script is very simple you need to just type this command:  
 `python main.py -f path/of/file/to/process -nf path/of/new/file`  
+or optionally:  
+`python main.py --file_path path/of/file/to/process --new_file_path path/of/new/file` 
 
 - Script should process your csv report and write new file with the destination you chose(if it exists)
 - Output format: UTF-8 CSV file with Unix line endings, with columns: date (YYYY-MM-DD),
