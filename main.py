@@ -81,7 +81,7 @@ def main(args):
                     ctr_h
                 )
     else:
-        sys.stderr.write(f'{args.file} - there is no such file or\n')
+        sys.stderr.write(f'{args.file} - there is no such file or directory\n')
 
 
 def data_manipulation(csv_reader, args, date_h, state_h, impression_h, ctr_h):
