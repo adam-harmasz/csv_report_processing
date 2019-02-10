@@ -31,6 +31,14 @@ example output:
 
 ### GETTING STARTED
 
+1. Checking Python version.
+    - To be able to use this script you'll need to have Python installed, you can check whether you have it installed or not by typing in terminal:  
+`python3 --version`  
+or:  
+`python --version`  
+    - This script was written using version 3.7.0 and it is advised to use the same version, but script should work with 3.6 version as well.  
+    -If you don't have Python installed you can go to [Python.org](https://www.python.org/downloads/) to download it.
+
 1. Creating Virtual Environment  
     - To create a virtual environment, decide upon a directory where you want to place it, and run the venv module as a script with the directory path:  
     `python3 -m venv tutorial-env`  
